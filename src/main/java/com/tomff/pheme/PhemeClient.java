@@ -1,6 +1,5 @@
 package com.tomff.pheme;
 
-import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
