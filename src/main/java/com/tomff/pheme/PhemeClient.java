@@ -2,10 +2,16 @@ package com.tomff.pheme;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PhemeClient {
+    private static final Logger logger = Logger.getLogger(PhemeClient.class.getName());
+
     private final ManagedChannel channel;
     private final PeerValueGrpc.PeerValueBlockingStub blockingStub;
 
@@ -19,12 +25,20 @@ public class PhemeClient {
                 .newBlockingStub(channel);
     }
 
-    public Value get() {
+    public Optional<Value> get() {
         GetValueRequest request = GetValueRequest
                 .newBuilder()
                 .build();
 
-        return blockingStub.get(request);
+        try {
+            return Optional.ofNullable(blockingStub
+                    .withDeadlineAfter(10, TimeUnit.SECONDS)
+                    .get(request));
+        } catch (StatusRuntimeException e) {
+            logger.warning("Failed to get peer value: " + e.getStatus());
+        }
+
+        return Optional.empty();
     }
 
     public void shutdown() throws InterruptedException {
