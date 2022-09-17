@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "PhemeProto";
+option java_package = "com.tomff.pheme";
+
+package pheme;
+
+service PeerValue {
+  rpc Get(GetValueRequest) returns (Value) {}
+  rpc Set(Value) returns (Value) {}
+}
+
+message GetValueRequest {
+}
+
+message Value {
+  string value = 1;
+  int64 timestamp = 2;
+}

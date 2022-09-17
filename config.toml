@@ -1,0 +1,9 @@
+port = 3200
+gossip_delay = 10
+initial_value = "I'm not sus"
+
+peers = [
+    { addr = "127.0.0.1", port = 3201 },
+    { addr = "127.0.0.1", port = 3201 },
+    { addr = "127.0.0.1", port = 3201 }
+]
