@@ -26,7 +26,7 @@ public class PhemeMain {
     public PhemeMain(Config config) {
       this.config = config;
 
-      executor = Executors.newScheduledThreadPool(16);
+      executor = Executors.newScheduledThreadPool(config.threadPoolSize());
 
       peerSamplingService = new PeerSamplingService(config.peers());
 

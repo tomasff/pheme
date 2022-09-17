@@ -1,4 +1,5 @@
 port = 3200
+thread_pool_size = 16
 gossip_delay = 10
 initial_value = "I'm not sus"
 
