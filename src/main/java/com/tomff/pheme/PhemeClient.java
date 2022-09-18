@@ -48,4 +48,12 @@ public class PhemeClient {
 
         channel.shutdown().awaitTermination(30, TimeUnit.SECONDS);
     }
+
+    public void shutdownNow() {
+        if (channel == null) {
+            return;
+        }
+
+        channel.shutdownNow();
+    }
 }

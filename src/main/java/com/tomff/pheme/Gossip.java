@@ -41,7 +41,10 @@ public class Gossip implements Runnable {
         try {
             client.shutdown();
         } catch (InterruptedException e) {
-            logger.severe(e.getMessage());
+            e.printStackTrace(System.err);
+
+            client.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 }

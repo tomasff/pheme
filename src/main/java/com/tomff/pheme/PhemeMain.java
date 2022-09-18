@@ -40,7 +40,9 @@ public class PhemeMain {
       server = new PhemeServer(config.port(), state, executor);
     }
 
-    public void start() throws IOException, InterruptedException {
+    public void start() throws IOException {
+        server.start();
+
         executor.scheduleAtFixedRate(
                 new Gossip(peerSamplingService, state),
                 0,
@@ -48,8 +50,7 @@ public class PhemeMain {
                 TimeUnit.SECONDS
         );
 
-        server.start();
-        server.blockUntilShutdown();
+        Runtime.getRuntime().addShutdownHook(new PhemeShutdownHook(executor));
     }
 
     private static String getConfigPath(String[] args) throws IOException {
@@ -64,7 +65,7 @@ public class PhemeMain {
         return objectMapper.readValue(new File(path), Config.class);
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         String configPath = getConfigPath(args);
         Config config = loadConfig(configPath);
 

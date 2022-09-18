@@ -7,7 +7,6 @@ import io.grpc.protobuf.services.ProtoReflectionService;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class PhemeServer {
@@ -37,34 +36,5 @@ public class PhemeServer {
         server.start();
 
         logger.info("Starting Pheme server on port " + port);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            // Use stderr here since the logger may have been reset by its JVM shutdown hook.
-            System.err.println("*** shutting down gRPC server since JVM is shutting down");
-
-            try {
-                PhemeServer.this.stop();
-            } catch (InterruptedException e) {
-                e.printStackTrace(System.err);
-            }
-
-            System.err.println("*** server shut down");
-        }));
-    }
-
-    public void stop() throws InterruptedException {
-        if (server == null) {
-            return;
-        }
-
-        server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
-    }
-
-    void blockUntilShutdown() throws InterruptedException {
-        if (server == null) {
-            return;
-        }
-
-        server.awaitTermination();
     }
 }
