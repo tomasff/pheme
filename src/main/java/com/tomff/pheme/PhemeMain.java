@@ -53,6 +53,10 @@ public class PhemeMain {
         Runtime.getRuntime().addShutdownHook(new PhemeShutdownHook(executor));
     }
 
+    public PhemeState getState() {
+        return state;
+    }
+
     private static String getConfigPath(String[] args) throws IOException {
         if (args.length == 0) {
             throw new IOException("Invalid config path.");
