@@ -1,6 +1,7 @@
-package com.tomff.pheme;
+package com.tomff.pheme.grpc;
 
-import com.tomff.pheme.services.PeerValueService;
+import com.tomff.pheme.PhemeState;
+import com.tomff.pheme.services.RumourService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
@@ -22,7 +23,7 @@ public class PhemeServer {
     public PhemeServer(ServerBuilder<?> serverBuilder, PhemeState state, int port, Executor executor) {
         this.port = port;
         this.server = serverBuilder
-                .addService(new PeerValueService(state))
+                .addService(new RumourService(state))
                 .addService(ProtoReflectionService.newInstance()/* only for testing */)
                 .executor(executor)
                 .build();

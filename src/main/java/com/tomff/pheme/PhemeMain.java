@@ -3,7 +3,7 @@ package com.tomff.pheme;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
-import com.tomff.pheme.services.PeerSamplingService;
+import com.tomff.pheme.grpc.PhemeServer;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +19,6 @@ public class PhemeMain {
     private final PhemeState state;
     private final PhemeServer server;
 
-    private final PeerSamplingService peerSamplingService;
-
     private final ScheduledExecutorService executor;
 
     public PhemeMain(Config config) {
@@ -28,14 +26,7 @@ public class PhemeMain {
 
       executor = Executors.newScheduledThreadPool(config.threadPoolSize());
 
-      peerSamplingService = new PeerSamplingService(config.peers());
-
-      state = new PhemeState(
-              Value.newBuilder()
-                      .setValue(config.initialValue())
-                      .setTimestamp(System.currentTimeMillis())
-                      .build()
-      );
+      state = new PhemeState(config);
 
       server = new PhemeServer(config.port(), state, executor);
     }
@@ -44,7 +35,7 @@ public class PhemeMain {
         server.start();
 
         executor.scheduleAtFixedRate(
-                new Gossip(peerSamplingService, state),
+                new Gossip(state),
                 0,
                 config.gossipDelay(),
                 TimeUnit.SECONDS

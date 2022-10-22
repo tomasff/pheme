@@ -6,15 +6,32 @@ option java_package = "com.tomff.pheme";
 
 package pheme;
 
-service PeerValue {
-  rpc Get(GetValueRequest) returns (Value) {}
-  rpc Set(Value) returns (Value) {}
+service RumourService {
+  rpc Get(GetValueRequest) returns (Rumour) {}
+  rpc Set(Rumour) returns (Rumour) {}
 }
 
-message GetValueRequest {
-}
+message GetValueRequest {}
 
-message Value {
+message Rumour {
   string value = 1;
   int64 timestamp = 2;
 }
+
+service MembershipService {
+  rpc JoinOverlay(JoinOverlayRequest) returns (JoinOverlayRequestAck) {}
+  rpc ForwardJoin(ForwardJoinRequest) returns (ForwardJoinRequestAck) {}
+  rpc Disconnect(DisconnectPeer) returns (DisconnectPeerAck) {}
+}
+
+message JoinOverlayRequest {}
+message JoinOverlayRequestAck {}
+
+message ForwardJoinRequest {
+  int64 timeToLive = 1;
+}
+
+message ForwardJoinRequestAck {}
+
+message DisconnectPeer {}
+message DisconnectPeerAck {}

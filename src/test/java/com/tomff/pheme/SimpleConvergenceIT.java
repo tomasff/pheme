@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,11 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SimpleConvergenceIT {
     private static final int BASE_PORT = 3200;
 
-    private List<Peer> generatePeersForOffset(int targetOffset, int basePort, int numPeers) {
+    private Collection<Peer> generatePeersForOffset(int targetOffset, int basePort, int numPeers) {
         return IntStream.range(0, numPeers)
                 .filter(offset -> offset != targetOffset)
                 .mapToObj(offset -> new Peer("127.0.0.1", basePort + offset))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private PhemeMain generatePeerWithOffset(int offset, int basePort, int numPeers, String initialValue) {
@@ -27,6 +28,7 @@ public class SimpleConvergenceIT {
                     basePort + offset,
                     2,
                     5,
+                    1,
                     initialValue,
                     generatePeersForOffset(offset, basePort, numPeers)
                 )

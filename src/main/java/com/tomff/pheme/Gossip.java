@@ -1,42 +1,28 @@
 package com.tomff.pheme;
 
-import com.tomff.pheme.services.PeerSamplingService;
-import io.grpc.StatusRuntimeException;
+import com.tomff.pheme.grpc.PhemeClient;
 
 import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Gossip implements Runnable {
     private static final Logger logger = Logger.getLogger(Gossip.class.getName());
-
-    private final PeerSamplingService peerSampling;
     private final PhemeState phemeState;
 
-    public Gossip(PeerSamplingService peerSampling, PhemeState phemeState) {
-        this.peerSampling = peerSampling;
+    public Gossip(PhemeState phemeState) {
         this.phemeState = phemeState;
     }
 
-    private void updateStateIfNewer(Value value) {
-        Value localValue = phemeState.getValue();
+    private void gossipWith(Peer peer) {
+        logger.info("Gossiping with " + peer);
 
-        if (value.getTimestamp() > localValue.getTimestamp()) {
-            logger.info("Newer value " + value.getValue() + " with timestamp " + value.getTimestamp() + " received, updating.");
-            phemeState.setValue(value);
-        }
-    }
-
-    @Override
-    public void run() {
-        Peer targetPeer = peerSampling.sample();
-        logger.info("Gossiping with " + targetPeer);
-
-        PhemeClient client = new PhemeClient(targetPeer.addr(), targetPeer.port());
-        Optional<Value> receivedValue = client.get();
+        PhemeClient client = new PhemeClient(peer.addr(), peer.port());
+        Optional<Rumour> receivedValue = client.get();
 
         logger.info("Received " + receivedValue);
 
-        receivedValue.ifPresent(this::updateStateIfNewer);
+        receivedValue.map(phemeState::updateIfNewer)
+                .ifPresent(isNewer -> logger.info("Updated internal state: " + isNewer));
 
         try {
             client.shutdown();
@@ -46,5 +32,12 @@ public class Gossip implements Runnable {
             client.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public void run() {
+//        for (Peer peer : peers) {
+//            gossipWith(peer);
+//        }
     }
 }

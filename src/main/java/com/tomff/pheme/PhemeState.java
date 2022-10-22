@@ -1,17 +1,45 @@
 package com.tomff.pheme;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class PhemeState {
-    private Value value;
+    private Config config;
+    private Rumour rumour;
 
-    public PhemeState(Value value) {
-        this.value = value;
+    private View activeView;
+    private View passiveView;
+
+    public PhemeState(Config config) {
+        this.config = config;
+
+        this.rumour = Rumour.newBuilder()
+                .setValue(config.initialValue())
+                .setTimestamp(System.currentTimeMillis())
+                .build();
+
+        this.activeView = new View(config.activeViewCapacity());
+        this.passiveView = new View(config.activeViewCapacity()); // TOOD: change
     }
 
-    public synchronized void setValue(Value value) {
-        this.value = value;
+    public synchronized void setValue(Rumour rumour) {
+        this.rumour = rumour;
     }
 
-    public synchronized Value getValue() {
-        return value;
+    public synchronized Rumour getValue() {
+        return rumour;
+    }
+
+    public synchronized boolean updateIfNewer(Rumour otherRumour) {
+        if (otherRumour.getTimestamp() > rumour.getTimestamp()) {
+            this.rumour = otherRumour;
+            return true;
+        }
+
+        return false;
+    }
+
+    public View getActiveView() {
+        return activeView;
     }
 }
